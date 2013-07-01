@@ -22,9 +22,14 @@ require.config({
         backbone: 'backbone-min',
 
         fancybox: 'fancybox/source/jquery.fancybox.pack',
-        fancybox_css: 'fancybox/source/jquery.fancybox'
+        fancybox_css: 'fancybox/source/jquery.fancybox',
+
+        'socket.io': 'socket.io/socket.io.min',
     },
     shim: {
+        'socket.io': {
+            exports: 'io'
+        },
         underscore: {
             exports: '_'
         },

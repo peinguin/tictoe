@@ -4,19 +4,23 @@ define(
 		'views/game',
 		'models/user',
 		'config',
-		'collections/users'
+		'collections/users',
+		'socket.io'
 	],
 	function (
 		ChatView,
 		GameView,
 		UserModel,
 		cfg,
-		UsersCollection
+		UsersCollection,
+		io
 	) {
 
 		var usersCollection;
 		var current_user;
 		var game_type;
+		var socket;
+		var gameView;
 
 		var check = function(squre){
 
@@ -98,12 +102,12 @@ define(
 						count++;
 					}
 				}
-				console.log(i)
-				console.log(count)
-				console.log(cfg.to_win)
+
 				if(count >= cfg.to_win){
-					alert(usersCollection.at(current_user).get('username'));
-					break;
+					return usersCollection.at(current_user).get('username');
+				}
+				if(squre.parent().find(':empty').length == 0){
+					return 'Нічия';
 				}
 			}
 
@@ -124,10 +128,13 @@ define(
 				if(game_type == 'online'){
 					send_to_server(squre);
 				}else{
-					if(!check(squre)){
+					var check = check(squre);
+					if(!check){
 						current_user++;
 						if(current_user == usersCollection.length)
 							current_user -= usersCollection.length;
+					}else{
+						alert(check);
 					}
 				}
 			}
@@ -138,7 +145,7 @@ define(
 
 			ChatView.render();
 
-			var gameView = new GameView;
+			gameView = new GameView;
 			gameView.step = step;
 			gameView.render();	
 		}
@@ -165,7 +172,16 @@ define(
 									game_type = 'online';
 								}
 							});
+
 							playground_init();
+
+							if(game_type == 'online'){
+								socket = io.connect('http://localhost:'+cfg.port);
+								socket.emit('find game', { config: cfg, users: usersCollection.toJSON() });
+								socket.on('player find', function(data) {
+									console.log(data)
+								});
+							}
 						}
 					}
 				,

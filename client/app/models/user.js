@@ -24,13 +24,6 @@ define([
 						User.set('local', true);
 				}
 			});
-			User.on("change:local", function(){
-				if(
-					User.get('local') === false
-				){
-					//connect
-				}
-			});
 		}
 	});
 
