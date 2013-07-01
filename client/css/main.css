@@ -1,0 +1,47 @@
+#main{
+	position: absolute;
+	width: 100%;
+}
+#chat{
+	width: 20%;
+	min-width: 100px;
+	height: 100vh;
+	border-right: 1px solid black;
+	margin-right: 10px;
+	padding-right: 10px;
+	display: inline-block;
+	vertical-align: top;
+	position: relative;
+}
+	#chat button{
+		height: 20px;
+		overflow: hidden;
+	}
+	#chat textarea{
+		height: 50px;
+	}
+	#communion{
+		width: 100%;
+		margin-bottom: 10px;
+		position: relative;
+	}
+#gamefield{
+	width: 100vh;
+	height: 100vh;
+	position: absolute;
+	margin: 20px;
+	line-height: 0;
+	display: inline-block;
+	vertical-align: top;
+}
+.field{
+	position: relative;
+	border-top: none;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	border-left: none;
+	display: inline-block;
+	vertical-align: top;
+	overflow: hidden;
+	text-align: center;
+}

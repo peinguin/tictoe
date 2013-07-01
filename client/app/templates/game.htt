@@ -1,0 +1,5 @@
+<% _.range(height).forEach(function(i){
+	_.range(width).forEach(function(j){
+		%><div class="field<% if(j == width){j %> last<% } %>"></div><%
+	}) 
+}); %>

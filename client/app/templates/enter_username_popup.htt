@@ -1,0 +1,11 @@
+<div id="enter_username" class="control-group row">
+	<div class="span2">
+		<h1>Please, enter your username</h1>
+		<input id="username" name="username" required="required" />
+		<span class="help-inline"></span>
+		<button id="local">Enter</button>
+	</div>
+	<div class="span2">
+		<button id="foreign">Internet User</button>
+	</div>
+</div>
