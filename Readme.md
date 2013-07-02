@@ -2,7 +2,7 @@ TicToe
 ========
 
 
-Game with online feature (over websockets) (in development)
+Game with online feature (over websockets)
 -----------------------------------------------------------
 
 Has a chat between participants.
