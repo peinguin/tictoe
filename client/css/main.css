@@ -45,3 +45,6 @@
 	overflow: hidden;
 	text-align: center;
 }
+.field[disabled]{
+	background-color: gray;
+}

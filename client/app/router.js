@@ -19,6 +19,7 @@ define([
     var initialize = function() {
 
         var app_router = new AppRouter;
+        GameController.setRouter(app_router);
         app_router.on('route:defaultAction', function() {
             GameController.start();
         });

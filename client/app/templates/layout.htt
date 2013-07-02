@@ -1,4 +1,4 @@
-<head></head>
+<head><div id="alerts"></div></head>
 <section id="main">
 	<section id="chat"></section><section id="gamefield"></section>
 </section>

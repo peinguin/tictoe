@@ -16,6 +16,23 @@ define(
 
 			step: undefined,
 
+			block: function(){
+				$('#chat *').attr('disabled', 'disabled');
+				$('#gamefield *').attr('disabled', 'disabled');
+				$('#gamefield *').off('click');
+			},
+
+			unblock: function(){
+				var view = this;
+				$('#chat *').removeAttr('disabled');
+				$('#gamefield *').removeAttr('disabled');
+				$('#gamefield *').on('click', function(e){
+					e.preventDefault();
+					if(view.step)
+						view.step(e.target);
+				});
+			},
+
 			resize: function(){
 
 				var view = this;
@@ -54,11 +71,7 @@ define(
 					$('.field:nth-child('+cfg.width+'n)').css('border-right', 'none');
 					$(_.map(_.range(cfg.width), function(x){return '.field:nth-child('+((cfg.height - 1)*cfg.width + x + 1)+'n)';}).join(",\n")).css('border-bottom', 'none');
 
-				$('.field').click(function(e){
-					e.preventDefault();
-					if(view.step)
-						view.step(e.target);
-				});
+				this.unblock();
 			},
 
 			render:function(){

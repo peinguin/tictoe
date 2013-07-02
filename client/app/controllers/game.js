@@ -5,7 +5,8 @@ define(
 		'models/user',
 		'config',
 		'collections/users',
-		'socket.io'
+		'socket.io',
+		'views/alert'
 	],
 	function (
 		ChatView,
@@ -13,8 +14,15 @@ define(
 		UserModel,
 		cfg,
 		UsersCollection,
-		io
+		io,
+		AlertView
 	) {
+
+		var router;
+
+		var setRouter = function(r){
+			router = r;
+		}
 
 		var usersCollection;
 		var current_user;
@@ -166,6 +174,9 @@ define(
 						if(usersCollection.length < cfg.users_count){
 							init_user();
 						}else{
+
+							usersCollection.unbind("change reset add remove");
+
 							game_type = 'local';
 							usersCollection.each(function(user){
 								if(user.get('local') === false){
@@ -176,10 +187,59 @@ define(
 							playground_init();
 
 							if(game_type == 'online'){
-								socket = io.connect('http://localhost:'+cfg.port);
-								socket.emit('find game', { config: cfg, users: usersCollection.toJSON() });
-								socket.on('player find', function(data) {
-									console.log(data)
+								gameView.block();
+								AlertView.render('Wait for other players');
+								socket = io.connect('http://localhost:'+cfg.port, { 'reconnect': false, 'connect timeout': 100, 'force new connection': true});
+								socket.on('error', function () {
+									AlertView.render('Connection error.Trying');
+									router.trigger("route:defaultAction");
+								});
+								socket.on('connect', function () {
+									socket.emit('find game', { config: cfg, users: usersCollection.toJSON() });
+									socket.on('new user', function(data) {
+
+										ChatView.write('New user ' + data.username);
+
+										var added = false;
+										usersCollection.each(function(user){
+											if(!added && user.get('username') === data.username){
+												user.unset('cid').set({id:parseInt(data.id)});
+												added = true;
+											}
+										});
+										if(!added)
+											usersCollection.each(function(user){
+												if(!added && user.get('local') === false && user.get('username') == undefined){
+													user.set('username', data.username);
+													user.unset('cid').set({id:parseInt(data.id)});
+													added = true;
+												}
+											});
+									});
+									socket.on('game', function(data) {
+										data = JSON.parse(data);
+										
+										for(i in data.users){
+											var added = false;
+											usersCollection.each(function(user){
+												if(!added && user.get('local') === false){
+													user.set('username', parseInt(data.users[i]));
+													user.unset('cid').set({id:parseInt(i)});
+													added = true;
+												}
+											});
+										}
+										ChatView.write('Join to game');
+									});
+									socket.on('step', function(curr_user) {
+										ChatView.write(usersCollection.get(curr_user).get('username') + ' turn');
+										current_user = curr_user;
+										var finded = false;
+
+										if(usersCollection.get(current_user).get('local') === true){
+											gameView.unblock();
+										}
+									});
 								});
 							}
 						}
@@ -191,7 +251,8 @@ define(
 		}
 
 		return {
-			start: start
+			start: start,
+			setRouter: setRouter
 		}
 	}
 );
