@@ -11,6 +11,7 @@ require.config({
         config: '../app/config',
         controllers: '../app/controllers',
         collections: '../app/collections',
+        check: '../app/check',
 
         jquery: 'jquery-2.0.2.min',
 
