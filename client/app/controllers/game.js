@@ -191,7 +191,7 @@ define(
 							}else{
 								Winner(usersCollection.get(data.data).get('username'));
 							}
-							
+
 							ChatView.write(usersCollection.get(current_user).get('username') + ' turn');
 
 							if(usersCollection.get(current_user).get('local') === true){

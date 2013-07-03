@@ -94,12 +94,15 @@ requirejs(
 		            	users: games[roomID].users,
 		                started: games[roomID].started
 		            }));
+		            var socket_users = [];
 		            for(j in data.users){
 		                if(data.users[j].local == true){
 		                    games[roomID].users.push(data.users[j].username);
+		                    socket_users.push(games[roomID].users.length - 1);
 		                    io.sockets.in('room'+roomID).emit('new user', {username: data.users[j].username, id: games[roomID].users.length - 1});
 		                }
 		            }
+		            socket.set('socket_users', socket_users);
 		            if(games[roomID].users_count == games[roomID].users.length){
 		                games[roomID].started = true;
 		                games[roomID].timeout = time_to_step;
@@ -108,8 +111,18 @@ requirejs(
 		        });
 			});
 			socket.on('step', function(asdfasdfasdfasdf){
-				socket.get('roomID', function (error, roomID) {
-					if(roomID && games[roomID] && games[roomID].started){
+
+				var roomID = undefined;
+				var socket_users = undefined;
+
+				var processor = function(){
+					if(
+						roomID !== undefined &&
+						socket_users &&
+						games[roomID] &&
+						games[roomID].started &&
+						socket_users.indexOf(games[roomID].current_user) >= 0
+					){
 						var x = asdfasdfasdfasdf.x;
 						var y = asdfasdfasdfasdf.y;
 						games[roomID].timeout = time_to_step;
@@ -149,6 +162,16 @@ requirejs(
 
 						io.sockets.in('room'+roomID).emit('step', {data: data, current_user: games[roomID].current_user});
 					}
+				}
+
+				socket.get('roomID', function (error, rID) {
+					roomID = rID;
+					processor();
+				});
+
+				socket.get('socket_users', function (error, value) {
+					socket_users = value;
+					processor();
 				});
 			});
 		});
