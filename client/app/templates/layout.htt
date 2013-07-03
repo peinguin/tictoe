@@ -1,4 +1,4 @@
-<head><div id="alerts"></div></head>
+<head><div id="alerts"></div><div id="timer"></div></head>
 <section id="main">
 	<section id="chat"></section><section id="gamefield"></section>
 </section>

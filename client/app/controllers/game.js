@@ -7,7 +7,8 @@ define(
 		'collections/users',
 		'socket.io',
 		'views/alert',
-		'check'
+		'check',
+		'views/timer'
 	],
 	function (
 		ChatView,
@@ -17,7 +18,8 @@ define(
 		UsersCollection,
 		io,
 		AlertView,
-		Check
+		Check,
+		TimerView
 	) {
 
 		var router;
@@ -34,10 +36,12 @@ define(
 
 		var NoOne = function(){
 			alert('No one');
+			router.trigger("route:defaultAction");
 		}
 
 		var Winner = function(winner){
 			alert(winner);
+			router.trigger("route:defaultAction");
 		}
 
 		var step = function(squre){
@@ -187,7 +191,7 @@ define(
 							}else{
 								Winner(usersCollection.get(data.data).get('username'));
 							}
-
+							
 							ChatView.write(usersCollection.get(current_user).get('username') + ' turn');
 
 							if(usersCollection.get(current_user).get('local') === true){
@@ -196,6 +200,15 @@ define(
 						});
 						socket.on('disconnect', function() {
 							alert('disconnected');
+							router.trigger("route:defaultAction");
+						});
+						socket.on('tick', function(data){
+							var timer = new TimerView;
+							timer.time = data;
+							timer.render();
+						});
+						socket.on('time ower', function(){
+							alert('time over');
 							router.trigger("route:defaultAction");
 						});
 					});
