@@ -19,6 +19,42 @@ requirejs(
 		var app = require('http').createServer();
 		var io = require('socket.io').listen(app, { log: false });
 		io.on('connection', function(socket){
+
+			var finish_game = function(roomID, event){
+				games[roomID].started = false;
+        		clearInterval(games[roomID].timer);
+        		delete games[roomID];
+        		socket.set('roomID', undefined);
+
+        		if(event)
+        			event();
+			}
+			socket.on('chat', function(data){
+
+				var roomID = undefined;
+				var socket_users = undefined;
+
+				var processor = function(){
+					if(
+						roomID !== undefined &&
+						socket_users &&
+						games[roomID] &&
+						games[roomID].started
+					){
+						io.sockets.in('room'+roomID).emit('chat', {user: socket_users, message: data});
+					}
+				}
+
+				socket.get('roomID', function (error, rID) {
+					roomID = rID;
+					processor();
+				});
+
+				socket.get('socket_users', function (error, value) {
+					socket_users = value;
+					processor();
+				});
+			});
 			socket.on('find game', function(data){
 		        var finded = false;
 		        var roomID = undefined;
@@ -79,11 +115,10 @@ requirejs(
 		            	if(games[roomID].timeout > 0){
 		            		io.sockets.in('room'+roomID).emit('tick', games[roomID].timeout);
 		            	}else{
-		            		games[roomID].started = false;
-		            		io.sockets.in('room'+roomID).emit('time ower', games[roomID].timeout);
-		            		clearInterval(games[roomID].timer);
-		            		delete games[roomID];
-		            		socket.set('roomID', undefined);
+		            		finish_game(
+		            			roomID,
+		            			function(){io.sockets.in('room'+roomID).emit('time ower');}
+		            		);
 		            	}
 		            }, 1000);
 		        }
@@ -149,11 +184,8 @@ requirejs(
 						if(check === false){
 							data = games[roomID].field;
 						}else{
+							finish_game(roomID);
 							data = check;
-							games[roomID].started = false;
-		            		clearInterval(games[roomID].timer);
-		            		delete items[games[roomID]];
-		            		socket.set('roomID', undefined);
 						}
 
 						games[roomID].current_user++;

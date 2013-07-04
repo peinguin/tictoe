@@ -17,14 +17,12 @@ define(
 			step: undefined,
 
 			block: function(){
-				$('#chat *').attr('disabled', 'disabled');
 				$('#gamefield *').attr('disabled', 'disabled');
 				$('#gamefield *').off('click');
 			},
 
 			unblock: function(){
 				var view = this;
-				$('#chat *').removeAttr('disabled');
 				$('#gamefield *').removeAttr('disabled');
 				$('#gamefield *').on('click', function(e){
 					e.preventDefault();

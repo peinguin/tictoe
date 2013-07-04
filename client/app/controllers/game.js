@@ -44,6 +44,11 @@ define(
 			router.trigger("route:defaultAction");
 		}
 
+		var chat = function(message){
+			if(socket && socket.socket.connected)
+				socket.emit('chat', message);
+		}
+
 		var step = function(squre){
 
 			var squre = $(squre);
@@ -159,6 +164,8 @@ define(
 					gameView.block();
 					AlertView.render('Wait for other players');
 					socket = io.connect('http://localhost:'+cfg.port, { 'reconnect': false, 'connect timeout': 100, 'force new connection': true});
+					ChatView.chat = chat;
+
 					socket.on('error', function () {
 						AlertView.render('Connection error.Trying');
 						router.trigger("route:defaultAction");
@@ -210,6 +217,9 @@ define(
 						socket.on('time ower', function(){
 							alert('time over');
 							router.trigger("route:defaultAction");
+						});
+						socket.on('chat', function(data){
+							ChatView.write('<p>'+_.map(data.user,function(user){return usersCollection.get(user).get('username')}).join(' ')+' write <br />' + data.message + '</p>');
 						});
 					});
 				}

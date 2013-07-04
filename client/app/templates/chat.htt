@@ -1,6 +1,8 @@
 <section id="communion">
 </section>
 <section id="controls">
-	<textarea></textarea>
+<form>
+	<textarea name="message"></textarea>
 	<button>Send</button>
+</form>
 </section>
